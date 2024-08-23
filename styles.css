@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -21,8 +20,10 @@ body {
 }
 
 button {
-    width: 70%; /* Adjust button width */
-    max-width: 150px; /* Reduce max-width */
+    width: 80%; /* Adjust button width for better touch targets */
+    max-width: 200px; /* Increase the max-width for mobile */
+    padding: 10px; /* Increase padding for better usability */
+    font-size: 16px; /* Larger font for better readability on mobile */
     margin: 10px 0;
 }
 
@@ -74,3 +75,22 @@ canvas {
         margin-bottom: 0;
     }
 }
+
+/* Media queries for smaller screens (mobile) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack elements vertically on mobile */
+    }
+
+    .equation {
+        position: static;
+        margin-top: 20px; /* Add margin to space it out from the grid */
+        transform: none; /* Remove transformation to center it naturally */
+    }
+
+    button {
+        width: 90%; /* Make buttons wider on mobile */
+        font-size: 14px; /* Slightly reduce font size for mobile */
+    }
+}
+
