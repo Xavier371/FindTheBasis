@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
     }
+    //??
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
