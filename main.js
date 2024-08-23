@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     resizeCanvas();
 
     const origin = { x: canvas.width / 2, y: canvas.height / 2 };
-    let initialUnitVectorX = { x: 50, y: 0 };
-    let initialUnitVectorY = { x: 0, y: -50 };
+    const initialUnitVectorX = { x: 50, y: 0 };
+    const initialUnitVectorY = { x: 0, y: -50 };
     let unitVectorX = { ...initialUnitVectorX };
     let unitVectorY = { ...initialUnitVectorY };
 
@@ -312,4 +312,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
     draw();
     startTimer();
 });
-
