@@ -2,7 +2,6 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent unwanted scrolling */
 }
 
 .container {
@@ -11,7 +10,6 @@ body {
     align-items: center;
     padding: 20px;
     max-width: 100%;
-    height: 100vh; /* Ensure full-screen height on mobile */
 }
 
 .left-panel {
@@ -22,10 +20,8 @@ body {
 }
 
 button {
-    width: 80%; /* Adjust button width for better touch targets */
-    max-width: 200px; /* Increase the max-width for mobile */
-    padding: 10px; /* Increase padding for better usability */
-    font-size: 16px; /* Larger font for better readability on mobile */
+    width: 70%;
+    max-width: 150px;
     margin: 10px 0;
 }
 
@@ -35,17 +31,19 @@ canvas {
     max-width: 600px;
     height: 90vw;
     max-height: 600px;
-    touch-action: none; /* Prevent default touch actions (scrolling, etc.) */
 }
 
 .equation {
     margin-top: 20px;
     text-align: center;
     font-size: 18px;
-    width: 90vw; /* Match canvas width */
-    max-width: 600px; /* Align with canvas max-width */
+    width: 90vw;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Media queries for larger screens */
@@ -53,8 +51,7 @@ canvas {
     .container {
         flex-direction: row;
         justify-content: space-between;
-        align-items: center; /* Align items in the center */
-        height: auto; /* Allow auto height for larger screens */
+        align-items: center;
     }
 
     .left-panel {
@@ -74,30 +71,5 @@ canvas {
         transform: translateX(-50%);
         margin-top: 0;
         margin-bottom: 0;
-    }
-}
-
-/* Media queries for smaller screens (mobile) */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column; /* Stack elements vertically on mobile */
-        justify-content: flex-start;
-    }
-
-    .equation {
-        position: static;
-        margin-top: 20px; /* Add margin to space it out from the grid */
-        transform: none; /* Remove transformation to center it naturally */
-    }
-
-    button {
-        width: 90%; /* Make buttons wider on mobile */
-        font-size: 14px; /* Slightly reduce font size for mobile */
-    }
-
-    canvas {
-        width: 90vw; /* Adjust canvas width for mobile */
-        height: 90vw; /* Ensure it's square and scales properly */
-        max-width: 100%; /* Allow it to take up more space if necessary */
     }
 }
