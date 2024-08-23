@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const ctx = canvas.getContext('2d');
 
     function resizeCanvas() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+        const maxSize = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+        canvas.width = maxSize;
+        canvas.height = maxSize;
     }
 
     window.addEventListener('resize', resizeCanvas);
@@ -257,6 +258,47 @@ document.addEventListener('DOMContentLoaded', (event) => {
         } else if (isOnVector(clickPoint, unitVectorY)) {
             dragging = 'unitVectorY';
         }
+    });
+    
+    canvas.addEventListener('touchstart', (event) => {
+        if (gameWon || isPaused) return;
+    
+        const touch = event.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const touchPoint = { x: x, y: y };
+    
+        if (isOnVector(touchPoint, unitVectorX)) {
+            dragging = 'unitVectorX';
+        } else if (isOnVector(touchPoint, unitVectorY)) {
+            dragging = 'unitVectorY';
+        }
+    });
+
+    canvas.addEventListener('touchmove', (event) => {
+        if (dragging && !isPaused) {
+            const touch = event.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            const gridPoint = canvasToGrid({ x, y });
+    
+            const snappedX = Math.round(gridPoint.x) * 50;
+            const snappedY = Math.round(gridPoint.y) * -50;
+    
+            if (dragging === 'unitVectorX') {
+                unitVectorX = { x: snappedX, y: snappedY };
+            } else if (dragging === 'unitVectorY') {
+                unitVectorY = { x: snappedX, y: snappedY };
+            }
+    
+            draw();
+        }
+    });
+
+    canvas.addEventListener('touchend', () => {
+        dragging = null;
     });
 
     canvas.addEventListener('mousemove', handleMouseMove);
