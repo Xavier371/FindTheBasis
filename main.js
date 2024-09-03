@@ -33,8 +33,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     function getRandomPoint() {
         const min = -5;
         const max = 5;
-        const x = Math.floor(Math.random() * (max - min + 1)) + min;
-        const y = Math.floor(Math.random() * (max - min + 1)) + min;
+        let x, y;
+
+        do {
+            x = Math.floor(Math.random() * (max - min + 1)) + min;
+            y = Math.floor(Math.random() * (max - min + 1)) + min;
+        } while ((x === 1 && y === 0) || (x === 0 && y === 1));
+
         return { x: x, y: y };
     }
 
