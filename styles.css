@@ -27,11 +27,10 @@ p {
     margin: 10px 0;
 }
 
-
 .button-container {
     display: flex;
     justify-content: center;
-    gap: 15px; 
+    gap: 15px; /* Space between the buttons */
     margin: 20px 0;
 }
 
@@ -66,7 +65,7 @@ canvas {
     }
 
     .button-container {
-        flex-direction: row; /* Ensure buttons are side by side */
+        flex-direction: row; /* Ensure buttons are side by side*/
         align-items: center;
     }
 
@@ -75,4 +74,3 @@ canvas {
         height: 600px;
     }
 }
-
