@@ -1,76 +1,76 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
     padding: 20px;
-    max-width: 100%;
 }
 
-.left-panel {
-    width: 100%;
-    max-width: 250px;
-    margin-bottom: 20px;
-    text-align: center;
+h1 {
+    margin: 20px 0;
+}
+
+p {
+    margin: 10px 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 button {
-    width: 70%; /* Adjust button width */
-    max-width: 150px; /* Reduce max-width */
-    margin: 10px 0;
+    width: 100px;
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
 }
 
 canvas {
     border: 1px solid black;
-    width: 90vw;
+    width: 100%;
     max-width: 600px;
-    height: 90vw;
-    max-height: 600px;
+    height: auto;
+    margin: 20px 0;
 }
 
 .equation {
     margin-top: 20px;
-    text-align: center;
-    font-size: 18px;
-    width: 90vw; /* Match canvas width */
-    max-width: 600px; /* Align with canvas max-width */
+    width: 100%;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 /* Media queries for larger screens */
 @media (min-width: 768px) {
-    .container {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center; /* Align items in the center */
+    button {
+        width: 80px;
+        font-size: 14px;
     }
 
-    .left-panel {
-        width: 250px;
-        margin-right: 20px;
-        text-align: left;
+    .button-container {
+        flex-direction: column;
+        align-items: center;
     }
 
     canvas {
         width: 600px;
         height: 600px;
-    }
-
-    .equation {
-        position: absolute;
-        left: 40%;
-        transform: translateX(-50%);
-        margin-top: 0;
-        margin-bottom: 0;
     }
 }
