@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let solveClicked = false;
 
     function getRandomPoint() {
-        const min = -6;
-        const max = 6;
+        const min = -5;
+        const max = 5;
         const x = Math.floor(Math.random() * (max - min + 1)) + min;
         const y = Math.floor(Math.random() * (max - min + 1)) + min;
         return { x: x, y: y };
