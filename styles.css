@@ -27,9 +27,6 @@ p {
     margin: 10px 0;
 }
 
-#timer {
-    margin-top: -10px; /* Slightly raise the timer */
-}
 
 .button-container {
     display: flex;
