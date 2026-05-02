@@ -153,19 +153,68 @@ canvas {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* Solution panel — mobile first: static, below canvas */
+#solutionOverlay {
+    display: none;
+    position: static;
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    text-align: center;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+    pointer-events: none;
+    margin: 8px 0 16px;
+}
+
+/* Desktop/tablet: fixed top-right */
+@media (min-width: 769px) {
+    #solutionOverlay {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 300px;
+        font-size: 16px;
+        margin: 0;
+    }
+}
+
+#solutionHeader {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 2px;
+}
+
 #equationContainer {
     text-align: center;
-    margin: 20px 0;
-    font-size: 18px;
 }
 
-/* Solution overlay specific styles */
-#solutionOverlay {
-    text-align: center;
+#equation {
+    margin: 0;
+    padding: 0;
 }
 
-#equation, #equationText, #vectorMapping {
-    margin: 20px 0;
+#equationText {
+    margin: 0;
+    padding: 4px 0 0;
+    border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+#solutionText {
+    margin: 0;
+    padding: 4px 0 0;
+}
+
+#vectorMapping {
+    margin: 0;
+    padding: 4px 0 0;
+    border-top: 1px solid rgba(0,0,0,0.15);
 }
 
 /* Mobile responsiveness */
