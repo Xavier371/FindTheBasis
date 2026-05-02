@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let isShowingSolution = false;
     let hasMovedVector = false;
     let lastDragged = null;
+    let isAnimating = false;
+    let animationId = null;
     
     function getScaledPoint(event, rect) {
         let x, y;
@@ -233,40 +235,84 @@ document.addEventListener('DOMContentLoaded', (event) => {
         checkWinCondition(transformedBluePoint);
     }
 
+    function drawTransformedGrid() {
+        // How many grid lines to draw in each direction
+        const numLines = Math.ceil(Math.max(width, height) / baseVectorLength) + 2;
+        // How far to extend each line — must reach any canvas corner from any offset
+        // Canvas diagonal is ~850px; a vector step is at least baseVectorLength (50px), so 20 steps is safe
+        const ext = Math.ceil(Math.max(width, height) / baseVectorLength * 1.5) + 4;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(50, 50, 50, 0.55)';
+        ctx.lineWidth = 1;
+
+        for (let k = -numLines; k <= numLines; k++) {
+            // Lines of constant i-index: parallel to unitVectorY, offset by k*unitVectorX
+            ctx.beginPath();
+            ctx.moveTo(
+                origin.x + k * unitVectorX.x - ext * unitVectorY.x,
+                origin.y + k * unitVectorX.y - ext * unitVectorY.y
+            );
+            ctx.lineTo(
+                origin.x + k * unitVectorX.x + ext * unitVectorY.x,
+                origin.y + k * unitVectorX.y + ext * unitVectorY.y
+            );
+            ctx.stroke();
+
+            // Lines of constant j-index: parallel to unitVectorX, offset by k*unitVectorY
+            ctx.beginPath();
+            ctx.moveTo(
+                origin.x - ext * unitVectorX.x + k * unitVectorY.x,
+                origin.y - ext * unitVectorX.y + k * unitVectorY.y
+            );
+            ctx.lineTo(
+                origin.x + ext * unitVectorX.x + k * unitVectorY.x,
+                origin.y + ext * unitVectorX.y + k * unitVectorY.y
+            );
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
     function draw() {
-        if (isShowingInstructions || isShowingSolution) return;
-        
+        if (isShowingInstructions) return;
+
         drawGrid();
+
+        const vectorsMoved = (
+            unitVectorX.x !== initialUnitVectorX.x ||
+            unitVectorX.y !== initialUnitVectorX.y ||
+            unitVectorY.x !== initialUnitVectorY.x ||
+            unitVectorY.y !== initialUnitVectorY.y
+        );
+
+        if (isShowingSolution) drawTransformedGrid();
+
         drawAxes();
-        
-        drawArrow(origin, 
-                 { x: origin.x + initialUnitVectorX.x, y: origin.y + initialUnitVectorX.y }, 
+
+        drawArrow(origin,
+                 { x: origin.x + initialUnitVectorX.x, y: origin.y + initialUnitVectorX.y },
                  'black', 'i');
-        drawArrow(origin, 
-                 { x: origin.x + initialUnitVectorY.x, y: origin.y + initialUnitVectorY.y }, 
+        drawArrow(origin,
+                 { x: origin.x + initialUnitVectorY.x, y: origin.y + initialUnitVectorY.y },
                  'black', 'j');
 
-        const labelIX = (unitVectorX.x !== initialUnitVectorX.x || 
+        const labelIX = (unitVectorX.x !== initialUnitVectorX.x ||
                         unitVectorX.y !== initialUnitVectorX.y) ? "i'" : '';
-        const labelJY = (unitVectorY.x !== initialUnitVectorY.x || 
+        const labelJY = (unitVectorY.x !== initialUnitVectorY.x ||
                         unitVectorY.y !== initialUnitVectorY.y) ? "j'" : '';
-        
-        drawArrow(origin, 
-                 { x: origin.x + unitVectorX.x, y: origin.y + unitVectorX.y }, 
+
+        drawArrow(origin,
+                 { x: origin.x + unitVectorX.x, y: origin.y + unitVectorX.y },
                  'green', labelIX);
-        drawArrow(origin, 
-                 { x: origin.x + unitVectorY.x, y: origin.y + unitVectorY.y }, 
+        drawArrow(origin,
+                 { x: origin.x + unitVectorY.x, y: origin.y + unitVectorY.y },
                  'green', labelJY);
-        
+
         drawPoints();
 
-        // Check if either vector has moved from its initial position
-        if (unitVectorX.x !== initialUnitVectorX.x || 
-            unitVectorX.y !== initialUnitVectorX.y ||
-            unitVectorY.x !== initialUnitVectorY.x || 
-            unitVectorY.y !== initialUnitVectorY.y) {
-            drawTransformedVector();
-        }
+        if (vectorsMoved) drawTransformedVector();
     }
 
     function isOnVector(point, vector) {
@@ -453,7 +499,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }, { passive: false });
 
     function checkWinCondition(transformedPoint) {
-        if (Math.round(transformedPoint.x) === redPoint.x && 
+        if (isAnimating) return;
+        if (Math.round(transformedPoint.x) === redPoint.x &&
             Math.round(transformedPoint.y) === redPoint.y) {
             gameWon = true;
             stopTimer();
@@ -491,58 +538,106 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
+    function showSolutionText() {
+        const equationText = `
+            \\[
+            {\\color{green}\\begin{bmatrix} i_x & j_x \\\\ i_y & j_y \\end{bmatrix}}
+            {\\color{blue}\\begin{bmatrix} ${bluePoint.x} \\\\ ${bluePoint.y} \\end{bmatrix}}
+            =
+            {\\color{red}\\begin{bmatrix} ${redPoint.x} \\\\ ${redPoint.y} \\end{bmatrix}}
+            \\]
+        `;
+
+        const systemText = `
+            \\[
+            \\begin{aligned}
+            {\\color{green}i_x}({\\color{blue}${bluePoint.x}}) + {\\color{green}j_x}({\\color{blue}${bluePoint.y}}) &= {\\color{red}${redPoint.x}} \\\\
+            {\\color{green}i_y}({\\color{blue}${bluePoint.x}}) + {\\color{green}j_y}({\\color{blue}${bluePoint.y}}) &= {\\color{red}${redPoint.y}}
+            \\end{aligned}
+            \\]
+        `;
+
+        const solutionValues = `
+            \\[
+            \\begin{alignedat}{2}
+            {\\color{green}i_x} &= {\\color{green}${solution.a}}, &\\quad {\\color{green}j_x} &= {\\color{green}${solution.b}} \\\\
+            {\\color{green}i_y} &= {\\color{green}${solution.c}}, &\\quad {\\color{green}j_y} &= {\\color{green}${solution.d}}
+            \\end{alignedat}
+            \\]
+        `;
+
+        const vectorText = `
+            \\[
+            i' = ({\\color{green}${solution.a}}, {\\color{green}${solution.c}}), \\; j' = ({\\color{green}${solution.b}}, {\\color{green}${solution.d}})
+            \\]
+        `;
+
+        document.getElementById('equation').innerHTML = equationText;
+        document.getElementById('equationText').innerHTML = systemText;
+        document.getElementById('solutionText').innerHTML = solutionValues;
+        document.getElementById('vectorMapping').innerHTML = vectorText;
+
+        document.getElementById('solutionOverlay').style.display = 'block';
+        MathJax.typeset();
+    }
+
     function toggleSolution() {
-        isShowingSolution = !isShowingSolution;
-        const overlay = document.getElementById('solutionOverlay');
-        
-        if (isShowingSolution) {
-            isPaused = true;
-            const equationText = `
-                \\[
-                \\begin{bmatrix}
-                ${solution.a} & ${solution.b} \\\\
-                ${solution.c} & ${solution.d} \\\\
-                \\end{bmatrix}
-                \\begin{bmatrix}
-                ${bluePoint.x} \\\\
-                ${bluePoint.y} \\\\
-                \\end{bmatrix}
-                =
-                \\begin{bmatrix}
-                ${redPoint.x} \\\\
-                ${redPoint.y} \\\\
-                \\end{bmatrix}
-                \\]
-            `;
-
-            const systemText = `
-                \\[
-                \\begin{aligned}
-                ${solution.a}(${bluePoint.x}) + ${solution.b}(${bluePoint.y}) &= ${redPoint.x} \\\\
-                ${solution.c}(${bluePoint.x}) + ${solution.d}(${bluePoint.y}) &= ${redPoint.y}
-                \\end{aligned}
-                \\]
-            `;
-
-            const vectorText = `
-                \\[
-                \\text{} i' = (${solution.a}, ${solution.c}), \\; j' = (${solution.b}, ${solution.d})
-                \\]
-            `;
-
-            document.getElementById('equation').innerHTML = equationText;
-            document.getElementById('equationText').innerHTML = systemText;
-            document.getElementById('vectorMapping').innerHTML = vectorText;
-            
-            MathJax.typeset();
+        // Cancel any in-progress animation
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
         }
-        
-        overlay.style.display = isShowingSolution ? 'block' : 'none';
-        
-        if (!isShowingSolution) {
-            isPaused = false;
+
+        isShowingSolution = true;
+        isAnimating = true;
+        hasMovedVector = true;
+        gameWon = false;
+
+        // Always restart from initial positions so animation is visible every time
+        unitVectorX = { ...initialUnitVectorX };
+        unitVectorY = { ...initialUnitVectorY };
+
+        // Hide win message and timer immediately (no space preserved)
+        document.querySelector('.game-info').style.display = 'none';
+
+        // Show solution text right away, before animation begins
+        showSolutionText();
+
+        const startX = { ...unitVectorX };
+        const startY = { ...unitVectorY };
+        const targetX = { x: solution.a * baseVectorLength, y: -solution.c * baseVectorLength };
+        const targetY = { x: solution.b * baseVectorLength, y: -solution.d * baseVectorLength };
+        const duration = 1500; // ms
+        const startTime = performance.now();
+
+        function frame(currentTime) {
+            const t = Math.min((currentTime - startTime) / duration, 1);
+            // Smooth ease-in-out
+            const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+            unitVectorX = {
+                x: startX.x + (targetX.x - startX.x) * ease,
+                y: startX.y + (targetX.y - startX.y) * ease
+            };
+            unitVectorY = {
+                x: startY.x + (targetY.x - startY.x) * ease,
+                y: startY.y + (targetY.y - startY.y) * ease
+            };
+
             draw();
+
+            if (t < 1) {
+                animationId = requestAnimationFrame(frame);
+            } else {
+                animationId = null;
+                isAnimating = false;
+                unitVectorX = targetX;
+                unitVectorY = targetY;
+                draw(); // triggers win condition now that isAnimating is false
+            }
         }
+
+        animationId = requestAnimationFrame(frame);
     }
 
     function togglePause() {
@@ -567,11 +662,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('howToPlayButton').addEventListener('click', toggleInstructions);
     document.getElementById('backToGameButton').addEventListener('click', toggleInstructions);
     document.getElementById('solveButton').addEventListener('click', toggleSolution);
-    document.getElementById('backFromSolutionButton').addEventListener('click', toggleSolution);
 
     document.getElementById('resetButton').addEventListener('click', () => {
         isFirstGame = false;
-        
+
+        // Cancel any solve animation
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        isAnimating = false;
+
         // Stop any ongoing dragging
         dragging = null;
         
@@ -590,6 +691,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         isShowingSolution = false;
         hasMovedVector = false;
         
+        document.querySelector('.game-info').style.display = '';
         document.getElementById('winMessage').innerText = '';
         document.getElementById('timer').innerText = `Timer: ${elapsedTime} seconds`;
         document.getElementById('instructionsOverlay').style.display = 'none';
