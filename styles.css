@@ -1,0 +1,413 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    padding-top: max(20px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    background-color: #f0f0f0;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.instruction-tagline {
+    text-align: center;
+    color: #666;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    padding: 0 20px;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.game-info {
+    text-align: center;
+    margin: 5px 0;
+    font-size: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 15px;
+}
+
+.game-info span {
+    display: inline-block;
+}
+
+#winMessage {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.button-grid {
+    display: flex;
+    gap: 8px;
+    margin: 0 auto;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+button {
+    padding: 12px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    background-color: #1e3a8a !important;
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 120px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
+}
+
+button:hover, button:active, button:disabled, button[disabled] {
+    background-color: #1e40af !important;
+    color: white !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 8px rgba(30, 58, 138, 0.4);
+    transform: translateY(-1px);
+}
+
+#zoomControl {
+    position: fixed;
+    top: max(20px, env(safe-area-inset-top, 0px));
+    right: max(20px, env(safe-area-inset-right, 0px));
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 1001;
+}
+
+.zoom-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    padding: 0;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.zoom-level-display {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e3a8a;
+    min-width: 38px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#statsBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    background: #eef2ff;
+    border-radius: 20px;
+    padding: 6px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e3a8a;
+    margin: 4px 0;
+}
+
+#statsDivider {
+    color: #93c5fd;
+    font-weight: 300;
+}
+
+canvas {
+    border: 1px solid black;
+    background-color: white;
+    touch-action: none;
+    cursor: grab;
+    margin: 20px 0;
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 40px;
+    border: 2px solid #1e3a8a;
+    border-radius: 10px;
+    z-index: 1010;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.instruction-content {
+    margin: 20px 0;
+}
+
+.instruction-text {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.instruction-text ol {
+    padding-left: 25px;
+    margin-bottom: 30px;
+}
+
+.instruction-text li {
+    margin-bottom: 12px;
+}
+
+.gif-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.tutorial-gif {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Solution panel — mobile first: static card, below canvas */
+#solutionOverlay.has-solution {
+    display: block;
+}
+
+#solutionOverlay {
+    display: none;
+    position: static;
+    width: 100%;
+    max-width: 540px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+    pointer-events: none;
+    margin: 8px auto 16px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Medium screens (tablet / small laptop): still in flow, wider */
+@media (min-width: 769px) and (max-width: 1199px) {
+    #solutionOverlay {
+        font-size: 14px;
+        padding: 14px 20px;
+        max-width: 580px;
+    }
+}
+
+/* Large desktop: fixed top-right card, below the zoom control */
+@media (min-width: 1200px) {
+    #solutionOverlay {
+        position: fixed;
+        top: 72px;
+        right: 20px;
+        width: 290px;
+        max-width: 290px;
+        font-size: 15px;
+        padding: 14px 18px;
+        margin: 0;
+    }
+}
+
+#solutionHeader {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 2px;
+}
+
+#equationContainer {
+    text-align: center;
+}
+
+#equation {
+    margin: 0;
+    padding: 0;
+}
+
+#equationText {
+    margin: 0;
+    padding: 4px 0 0;
+    border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+#solutionText {
+    margin: 0;
+    padding: 4px 0 0;
+}
+
+#vectorMapping {
+    margin: 0;
+    padding: 4px 0 0;
+    border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #zoomControl {
+        display: none;
+    }
+
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin: 10px 0;
+    }
+
+    .instruction-tagline {
+        font-size: 14px;
+        margin: 0 0 5px 0;
+        padding: 0 15px;
+        font-style: italic;
+    }
+
+    .game-info {
+        font-size: 15px;
+        margin: 3px 0;
+        gap: 4px 10px;
+    }
+
+    #statsBox {
+        font-size: 14px;
+        padding: 5px 14px;
+        gap: 8px;
+    }
+
+    .game-info span {
+        text-align: center;
+    }
+
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 0;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+    }
+
+    button {
+        width: 100%;
+        height: 40px;
+        padding: 8px;
+        font-size: 15px;
+        margin: 0;
+        background-color: #1e3a8a !important;
+        color: white !important;
+        opacity: 1 !important;
+        -webkit-appearance: none;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
+    }
+
+    button:active {
+        background-color: #1e40af !important;
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(30, 58, 138, 0.4);
+    }
+
+    .overlay {
+        width: 90%;
+        padding: 20px;
+        max-height: 80vh;
+    }
+
+    .instruction-text {
+        font-size: 16px;
+    }
+
+    .tutorial-gif {
+        max-width: 100%;
+    }
+
+    canvas {
+        margin: 10px 0;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+}
+
+/* Remove duplicate media queries */
+@media (max-width: 320px) {
+    button {
+        font-size: 14px;
+    }
+}
+
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .overlay {
+        background: #333;
+        color: #fff;
+        border-color: #1e3a8a;
+    }
+
+    .tutorial-gif {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+} 
