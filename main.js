@@ -18,7 +18,7 @@ async function getLevelData(blue, red) {
             .from('ftb_levels').select('id')
             .eq('blue_x', blue.x).eq('blue_y', blue.y)
             .eq('red_x', red.x).eq('red_y', red.y)
-            .single();
+            .maybeSingle();
 
         if (!level) {
             const { data: newLevel } = await supabaseClient
