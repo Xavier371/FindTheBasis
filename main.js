@@ -53,8 +53,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = 600 * dpr;
     canvas.height = 600 * dpr;
-    canvas.style.width = '600px';
-    canvas.style.height = '600px';
+    const initialDisplayWidth = Math.min(600, window.innerWidth - 40);
+    const initialDisplayScale = initialDisplayWidth / 600;
+    canvas.style.width = `${initialDisplayWidth}px`;
+    canvas.style.height = `${600 * initialDisplayScale}px`;
     ctx.scale(dpr, dpr);
     const width = 600;
     const height = 600;
@@ -664,8 +666,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
             saveSolve();
             document.getElementById('timer').style.display = 'none';
             document.getElementById('statsDivider').style.display = 'none';
-            document.getElementById('winMessage').innerText =
-                'Congratulations! You won in ' + elapsedTime + ' seconds! ';
+            const winMsg = document.getElementById('winMessage');
+            winMsg.innerText = 'Congratulations! You won in ' + elapsedTime + ' seconds!';
+            winMsg.style.visibility = 'visible';
             clearTimeout(winTimeoutId);
             winTimeoutId = setTimeout(toggleSolution, 800);
         } else if (dragJustEnded) {
@@ -688,6 +691,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     function stopTimer() { clearInterval(timer); timer = null; }
+
+    function isMobileLayout() { return window.innerWidth <= 768; }
+
+    function initWinMessage() {
+        const el = document.getElementById('winMessage');
+        if (isMobileLayout()) {
+            el.innerText = '\u00A0';
+            el.style.visibility = 'hidden';
+        } else {
+            el.innerText = '';
+            el.style.visibility = '';
+        }
+    }
 
     // ── UI toggles ────────────────────────────────────────────────────────────
 
@@ -752,14 +768,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const userAlreadyWon = gameWon;
         if (!userAlreadyWon) {
             hasClickedSolve = true;
-            document.getElementById('statsBox').style.display = 'none';
+            if (isMobileLayout()) {
+                document.getElementById('statsBox').style.visibility = 'hidden';
+            } else {
+                document.getElementById('statsBox').style.display = 'none';
+            }
         }
         const userVecX = { ...unitVectorX };
         const userVecY = { ...unitVectorY };
 
         if (!userAlreadyWon) {
             stopTimer();
-            document.getElementById('timer').style.display = 'none';
         }
 
         isShowingSolution = true;
@@ -874,7 +893,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         hasSavedThisGame = false;
 
         document.querySelector('.game-info').style.display = '';
-        document.getElementById('winMessage').innerText = '';
+        initWinMessage();
+        document.getElementById('statsBox').style.visibility = '';
         document.getElementById('statsBox').style.display = '';
         document.getElementById('timer').style.display = '';
         document.getElementById('statsDivider').style.display = '';
@@ -912,6 +932,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     window.addEventListener('resize', handleResize);
     handleResize();
 
+    initWinMessage();
     draw();
     startTimer();
     updateZoomDisplay();
