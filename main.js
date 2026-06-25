@@ -296,24 +296,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     function drawTransformedGrid() {
-        const vl = baseVectorLength * zoom;
-        const diag = Math.ceil(Math.sqrt(width * width + height * height) / vl) + 4;
         const ux = unitVectorX.x * zoom, uy = unitVectorX.y * zoom;
         const vx = unitVectorY.x * zoom, vy = unitVectorY.y * zoom;
+        const diagonal = Math.sqrt(width * width + height * height);
+        const lenU = Math.hypot(ux, uy) || 1;
+        const lenV = Math.hypot(vx, vy) || 1;
+        const stepsU = Math.ceil(diagonal / lenU) + 2;
+        const stepsV = Math.ceil(diagonal / lenV) + 2;
 
         ctx.save();
         ctx.strokeStyle = 'rgba(50, 50, 50, 0.55)';
         ctx.lineWidth = 1;
 
-        for (let k = -diag; k <= diag; k++) {
+        for (let k = -stepsU; k <= stepsU; k++) {
             ctx.beginPath();
-            ctx.moveTo(origin.x + k * ux - diag * vx, origin.y + k * uy - diag * vy);
-            ctx.lineTo(origin.x + k * ux + diag * vx, origin.y + k * uy + diag * vy);
+            ctx.moveTo(origin.x + k * ux - stepsV * vx, origin.y + k * uy - stepsV * vy);
+            ctx.lineTo(origin.x + k * ux + stepsV * vx, origin.y + k * uy + stepsV * vy);
             ctx.stroke();
-
+        }
+        for (let k = -stepsV; k <= stepsV; k++) {
             ctx.beginPath();
-            ctx.moveTo(origin.x - diag * ux + k * vx, origin.y - diag * uy + k * vy);
-            ctx.lineTo(origin.x + diag * ux + k * vx, origin.y + diag * uy + k * vy);
+            ctx.moveTo(origin.x - stepsU * ux + k * vx, origin.y - stepsU * uy + k * vy);
+            ctx.lineTo(origin.x + stepsU * ux + k * vx, origin.y + stepsU * uy + k * vy);
             ctx.stroke();
         }
         ctx.restore();
